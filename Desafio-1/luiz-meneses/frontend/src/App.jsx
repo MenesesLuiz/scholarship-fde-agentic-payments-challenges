@@ -39,24 +39,43 @@ function App() {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
-  const chatEndRef = useRef(null);
+  const listaRef = useRef(null);
+  const turnoRef = useRef(null);
+  // Rolagem pedida para o próximo render: 'fim' ao abrir o histórico, 'turno' ao enviar.
+  // Durante o streaming fica null, para a tela não descer a cada pedaço da resposta.
+  const rolagem = useRef(null);
 
   useEffect(() => {
     if (logado) {
       getHistory()
-        .then(data => setMessages(data.messages || []))
+        .then(data => { rolagem.current = 'fim'; setMessages(data.messages || []); })
         .catch(() => setMessages([]));
     }
   }, [logado]);
 
   useEffect(() => {
-    chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    const lista = listaRef.current;
+    if (!lista || !rolagem.current) return;
+    if (rolagem.current === 'fim') {
+      lista.scrollTop = lista.scrollHeight;
+    } else if (turnoRef.current) {
+      const suave = !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      lista.scrollTo({ top: turnoRef.current.offsetTop - 16, behavior: suave ? 'smooth' : 'auto' });
+    }
+    rolagem.current = null;
   }, [messages]);
+
+  // A pergunta mais recente e o que veio depois dela formam o turno atual,
+  // que ocupa ao menos a altura da tela para a pergunta poder ficar no topo.
+  const inicioTurno = messages.findLastIndex(m => m.role === 'user');
+  const anteriores = inicioTurno < 0 ? messages : messages.slice(0, inicioTurno);
+  const turno = inicioTurno < 0 ? [] : messages.slice(inicioTurno);
 
   const enviar = async (texto) => {
     if (!texto.trim() || loading) return;
 
     setInput('');
+    rolagem.current = 'turno';
     setMessages(prev => [...prev, { role: 'user', content: texto }]);
     setLoading(true);
 
@@ -104,6 +123,13 @@ function App() {
       .replace(/`/g, '');
   };
 
+  const mensagem = (m, i) => (
+    <div key={i} className={`message ${m.role}${m.erro ? ' erro' : ''}`}>
+      <span className="sr-only">{m.role === 'user' ? 'Você disse:' : 'Agente:'}</span>
+      <p>{formatMessage(m.content)}</p>
+    </div>
+  );
+
   if (!logado) {
     return (
       <main className="login-page">
@@ -148,7 +174,7 @@ function App() {
           </div>
         </header>
 
-        <div className="messages" role="log" aria-live="polite" aria-busy={loading}>
+        <div className="messages" ref={listaRef} role="log" aria-live="polite" aria-busy={loading}>
           {messages.length === 0 && (
             <div className="empty-state">
               <Roseta className="roseta roseta-vazio" />
@@ -164,20 +190,19 @@ function App() {
             </div>
           )}
 
-          {messages.map((m, i) => (
-            <div key={i} className={`message ${m.role}${m.erro ? ' erro' : ''}`}>
-              <span className="sr-only">{m.role === 'user' ? 'Você disse:' : 'Agente:'}</span>
-              <p>{formatMessage(m.content)}</p>
-            </div>
-          ))}
+          {anteriores.map(mensagem)}
 
-          {loading && (
-            <div className="message assistant pensando">
-              <span className="loading-indicator" aria-hidden="true"><i /><i /><i /></span>
-              Consultando as ferramentas…
+          {turno.length > 0 && (
+            <div className="turno-atual" ref={turnoRef}>
+              {turno.map(mensagem)}
+              {loading && (
+                <div className="message assistant pensando">
+                  <span className="loading-indicator" aria-hidden="true"><i /><i /><i /></span>
+                  Consultando as ferramentas…
+                </div>
+              )}
             </div>
           )}
-          <div ref={chatEndRef} />
         </div>
 
         <form className="input-area" onSubmit={handleSend}>
