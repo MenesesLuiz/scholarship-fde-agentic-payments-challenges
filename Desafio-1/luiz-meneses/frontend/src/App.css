@@ -121,8 +121,8 @@ button {
 .login-card {
   position: relative;
   z-index: 1;
-  width: min(100%, 420px);
-  padding: var(--e-8) var(--e-8) var(--e-6);
+  width: min(100%, 440px);
+  padding: 28px var(--e-8) 20px;
   background: linear-gradient(155deg, rgb(255 255 255 / 0.17), rgb(255 255 255 / 0.05) 60%);
   border: 1px solid rgb(255 255 255 / 0.24);
   border-radius: 28px;
@@ -148,25 +148,24 @@ button {
 }
 
 .marca {
-  margin: 0 0 var(--e-6);
+  margin: 0 0 var(--e-4);
 }
 
 .logo-login {
-  width: 148px;
+  width: 128px;
 }
 
 .login-card h1 {
   margin: 0;
-  font-size: clamp(1.625rem, 5vw, 2rem);
+  font-size: clamp(1.5rem, 5vw, 1.625rem);
   font-weight: 800;
-  line-height: 1.08;
+  line-height: 1.1;
   letter-spacing: -0.03em;
   text-wrap: balance;
 }
 
 .login-copy {
-  max-width: 36ch;
-  margin: var(--e-3) 0 var(--e-6);
+  margin: var(--e-2) 0 20px;
   color: rgb(255 255 255 / 0.78);
   font-size: var(--t-sm);
   line-height: 1.55;
@@ -178,6 +177,12 @@ button {
 
 .login-card [data-amplify-router] {
   background: transparent;
+}
+
+/* Campos um pouco mais juntos para o card caber em telas de 1366x768 sem rolar. */
+.login-card form > .amplify-flex,
+.login-card fieldset {
+  gap: var(--e-3);
 }
 
 /* No celular o Amplify estreita o container; aqui ele ocupa o card inteiro. */
@@ -194,8 +199,8 @@ button {
 }
 
 .login-note {
-  margin: var(--e-6) 0 0;
-  padding-top: var(--e-4);
+  margin: var(--e-4) 0 0;
+  padding-top: var(--e-3);
   color: rgb(255 255 255 / 0.7);
   font-size: var(--t-xs);
   border-top: 1px solid rgb(255 255 255 / 0.18);
