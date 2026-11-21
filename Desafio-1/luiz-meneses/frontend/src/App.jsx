@@ -236,7 +236,7 @@ function App() {
         <div className="painel-rodape">
           <p className="aviso">Limite de R$&nbsp;2.000 por padrão no primeiro uso. Compras simuladas: nenhum valor é cobrado.</p>
           <div className="sessao">
-            <span className="session-label">{user?.signInDetails?.loginId || 'Sessão protegida'}</span>
+            <span className="session-label" title={user?.signInDetails?.loginId}>{user?.signInDetails?.loginId || 'Sessão protegida'}</span>
             <button type="button" className="logout-button" onClick={handleLogout}>Sair</button>
           </div>
         </div>

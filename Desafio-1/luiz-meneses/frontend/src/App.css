@@ -219,20 +219,20 @@ button {
 }
 
 .logout-button {
+  flex: none;
   min-height: 36px;
   padding: 0 var(--e-4);
-  color: var(--branco);
-  background: transparent;
-  border: 1px solid color-mix(in srgb, var(--branco) 30%, transparent);
+  color: var(--tinta);
+  background: var(--branco);
   border-radius: var(--raio-pilula);
   cursor: pointer;
   font-size: var(--t-sm);
-  font-weight: 600;
+  font-weight: 800;
   transition: background-color 160ms ease;
 }
 
 .logout-button:hover {
-  background: color-mix(in srgb, var(--branco) 12%, transparent);
+  background: var(--marca-dagua);
 }
 
 .status-label {
@@ -593,6 +593,7 @@ button {
   .painel-rodape {
     position: relative;
     display: grid;
+    grid-template-columns: minmax(0, 1fr); /* deixa o e-mail encolher em vez de empurrar o Sair */
     gap: var(--e-4);
     margin-top: auto;
     padding-top: var(--e-4);
@@ -607,6 +608,7 @@ button {
   }
 
   .sessao {
+    min-width: 0;
     display: flex;
     align-items: center;
     justify-content: space-between;
