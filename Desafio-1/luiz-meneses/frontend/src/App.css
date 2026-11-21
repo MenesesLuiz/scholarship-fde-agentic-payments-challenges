@@ -10,7 +10,7 @@ button {
   -webkit-tap-highlight-color: transparent;
 }
 
-/* ---------- Roseta (guilhochê) e logo manuscrita ---------- */
+/* ---------- Roseta (guilhochê) e logo ---------- */
 .roseta {
   display: block;
   fill: none;
@@ -22,20 +22,30 @@ button {
   display: block;
   height: auto;
   overflow: visible;
-  fill: none;
-  stroke: currentColor;
-  stroke-width: 44; /* unidades do viewBox (~3760 de largura): cerca de 2px a 170px */
-  stroke-linecap: round;
-  stroke-linejoin: round;
+  color: currentColor;
 }
 
-/* A caneta escreve a palavra uma vez; depois a logo fica parada. */
-.logo path {
+/* 1. Um traço fino percorre o contorno da letra. */
+.logo .contorno {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.4; /* unidades do viewBox (letras com 100 de corpo) */
+  stroke-linecap: round;
+  stroke-linejoin: round;
   stroke-dasharray: 1;
   stroke-dashoffset: 1;
-  animation-name: desenhar;
-  animation-timing-function: linear; /* tempo e atraso de cada traço vêm do componente Logo */
-  animation-fill-mode: forwards;
+  animation: desenhar 0.9s cubic-bezier(0.45, 0, 0.25, 1) forwards;
+}
+
+/* 2. A letra se preenche. O contorno da mesma cor, com junções redondas, arredonda as quinas. */
+.logo .preenchimento {
+  fill: currentColor;
+  fill-opacity: 0;
+  stroke: currentColor;
+  stroke-opacity: 0;
+  stroke-width: 4;
+  stroke-linejoin: round;
+  animation: preencher 0.45s ease-out forwards;
 }
 
 /* ---------- Login ---------- */
@@ -205,8 +215,7 @@ button {
 }
 
 .logo-header {
-  width: 104px;
-  stroke-width: 60;
+  width: 96px;
 }
 
 .logout-button {
@@ -609,6 +618,10 @@ button {
   to { stroke-dashoffset: 0; }
 }
 
+@keyframes preencher {
+  to { fill-opacity: 1; stroke-opacity: 1; }
+}
+
 @keyframes chegar {
   from { opacity: 0; transform: translateY(4px); }
   to { opacity: 1; transform: none; }
@@ -621,6 +634,6 @@ button {
 
 @media (prefers-reduced-motion: reduce) {
   .logo path {
-    animation-delay: 0s !important; /* sem movimento: a logo aparece pronta, não em pedaços */
+    animation-delay: 0s !important; /* sem movimento: a logo aparece pronta, sem atraso */
   }
 }

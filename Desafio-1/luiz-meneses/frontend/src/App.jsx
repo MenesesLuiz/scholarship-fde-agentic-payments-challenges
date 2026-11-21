@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { Authenticator, useAuthenticator } from '@aws-amplify/ui-react';
 import { getHistory, sendMessage } from './api';
-import { LOGO_TRACOS, LOGO_VIEWBOX } from './logo';
+import { LOGO_LETRAS, LOGO_VIEWBOX } from './logo';
 import './App.css';
 
 // Hipotrocoide: a curva das linhas de segurança (guilhochê) das cédulas.
@@ -28,21 +28,24 @@ function Roseta({ className }) {
   );
 }
 
-// Logo manuscrita: o mesmo traço de caneta da roseta, escrito uma vez ao aparecer.
-// Um <path> por traço, cada um começando quando o anterior termina: num path só,
-// o navegador reinicia o tracejado em cada traço e todas as letras surgiriam juntas.
-const ESCRITA_S = 2.4;
+// Logo: um traço percorre o contorno de cada letra, da esquerda para a direita,
+// e depois a letra se preenche. Cada contorno (o de fora e o miolo do "a") é um path
+// próprio, porque num path só o navegador reinicia o tracejado a cada contorno.
+// O preenchimento usa a letra inteira, para os miolos continuarem vazados.
 function Logo({ className }) {
   return (
     <svg className={`logo ${className}`} viewBox={LOGO_VIEWBOX} aria-hidden="true" focusable="false">
-      {LOGO_TRACOS.map(([d, inicio, duracao], i) => (
-        <path
-          key={i}
-          d={d}
-          pathLength="1"
-          style={{ animationDelay: `${0.2 + inicio * ESCRITA_S}s`, animationDuration: `${duracao * ESCRITA_S}s` }}
-        />
-      ))}
+      {LOGO_LETRAS.map((d, i) => {
+        const inicio = 0.15 + i * 0.22;
+        return (
+          <g key={i}>
+            <path className="preenchimento" d={d} style={{ animationDelay: `${inicio + 0.8}s` }} />
+            {d.split(/(?=M)/).map((contorno, j) => (
+              <path key={j} className="contorno" d={contorno} pathLength="1" style={{ animationDelay: `${inicio}s` }} />
+            ))}
+          </g>
+        );
+      })}
     </svg>
   );
 }
