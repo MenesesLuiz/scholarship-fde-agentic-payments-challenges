@@ -1,5 +1,6 @@
 button,
-input {
+input,
+textarea {
   font: inherit;
 }
 
@@ -9,12 +10,32 @@ button {
   -webkit-tap-highlight-color: transparent;
 }
 
-/* ---------- Roseta (guilhochê) ---------- */
+/* ---------- Roseta (guilhochê) e logo manuscrita ---------- */
 .roseta {
   display: block;
   fill: none;
   stroke: currentColor;
   stroke-width: 0.35;
+}
+
+.logo {
+  display: block;
+  height: auto;
+  overflow: visible;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 44; /* unidades do viewBox (~3760 de largura): cerca de 2px a 170px */
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* A caneta escreve a palavra uma vez; depois a logo fica parada. */
+.logo path {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  animation-name: desenhar;
+  animation-timing-function: linear; /* tempo e atraso de cada traço vêm do componente Logo */
+  animation-fill-mode: forwards;
 }
 
 /* ---------- Login ---------- */
@@ -60,9 +81,10 @@ button {
 .marca {
   position: relative;
   margin: 0 0 auto;
-  font-size: var(--t-md);
-  font-weight: 800;
-  letter-spacing: -0.01em;
+}
+
+.logo-login {
+  width: 168px;
 }
 
 .login-hero h1 {
@@ -137,6 +159,10 @@ button {
     padding: var(--e-12) clamp(var(--e-12), 6vw, 96px);
   }
 
+  .logo-login {
+    width: 200px;
+  }
+
   /* Roseta no alto, para não cruzar o texto do rodapé do painel. */
   .roseta-hero {
     top: 0;
@@ -149,90 +175,38 @@ button {
 /* ---------- Chat ---------- */
 .chat-page {
   height: 100dvh;
-  display: flex;
-  justify-content: center;
-  background: var(--papel);
-}
-
-.chat-container {
-  width: min(100%, 960px);
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
+  display: grid;
+  grid-template-columns: 1fr;
   background: var(--papel-claro);
 }
 
+/* Coluna lateral (desktop) */
+.painel {
+  display: none;
+}
+
+.conversa {
+  min-width: 0;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Cabeçalho fino (celular) */
 .header {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: var(--e-4);
-  padding: var(--e-3) var(--e-6);
+  padding: var(--e-3) var(--e-4);
   padding-top: max(var(--e-3), env(safe-area-inset-top));
   color: var(--branco);
   background: var(--tinta);
 }
 
-.brand-lockup {
-  display: flex;
-  align-items: center;
-  gap: var(--e-3);
-  min-width: 0;
-}
-
-.selo-marca {
-  width: 40px;
-  height: 40px;
-  flex: none;
-  display: grid;
-  place-items: center;
-  color: var(--marca-dagua);
-  border: 1px solid color-mix(in srgb, var(--marca-dagua) 40%, transparent);
-  border-radius: 50%;
-}
-
-.selo-marca .roseta {
-  width: 32px;
-  stroke-width: 0.9;
-}
-
-.header h1 {
-  margin: 0;
-  font-size: var(--t-md);
-  font-weight: 800;
-  line-height: 1.2;
-  letter-spacing: -0.01em;
-}
-
-.status-label {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  color: color-mix(in srgb, var(--branco) 72%, var(--tinta));
-  font-size: var(--t-xs);
-}
-
-.status-label i {
-  width: 6px;
-  height: 6px;
-  background: #5fd3a8;
-  border-radius: 50%;
-}
-
-.header-actions {
-  display: flex;
-  align-items: center;
-  gap: var(--e-3);
-  min-width: 0;
-}
-
-.session-label {
-  overflow: hidden;
-  color: color-mix(in srgb, var(--branco) 72%, var(--tinta));
-  font-size: var(--t-xs);
-  text-overflow: ellipsis;
-  white-space: nowrap;
+.logo-header {
+  width: 104px;
+  stroke-width: 60;
 }
 
 .logout-button {
@@ -252,7 +226,34 @@ button {
   background: color-mix(in srgb, var(--branco) 12%, transparent);
 }
 
+.status-label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0;
+  color: color-mix(in srgb, var(--branco) 72%, var(--tinta));
+  font-size: var(--t-xs);
+}
+
+.status-label i {
+  width: 6px;
+  height: 6px;
+  background: #5fd3a8;
+  border-radius: 50%;
+}
+
+.session-label {
+  min-width: 0;
+  overflow: hidden;
+  color: color-mix(in srgb, var(--branco) 72%, var(--tinta));
+  font-size: var(--t-xs);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* A conversa ocupa uma coluna de leitura centralizada; a barra de rolagem fica na borda. */
 .messages {
+  --coluna: 720px;
   position: relative; /* referência do offsetTop usado na rolagem */
   container-type: size; /* habilita 100cqh no turno atual */
   flex: 1;
@@ -260,14 +261,14 @@ button {
   overscroll-behavior: contain;
   display: flex;
   flex-direction: column;
-  gap: var(--e-4);
-  padding: var(--e-8) clamp(var(--e-4), 5vw, var(--e-12));
+  gap: var(--e-6);
+  padding: var(--e-8) max(var(--e-4), calc((100% - var(--coluna)) / 2));
 }
 
 .turno-atual {
   display: flex;
   flex-direction: column;
-  gap: var(--e-4);
+  gap: var(--e-6);
   min-height: 100cqh;
 }
 
@@ -331,7 +332,8 @@ button {
 .message {
   max-width: min(85%, 64ch);
   font-size: var(--t-md);
-  line-height: 1.55;}
+  line-height: 1.6;
+}
 
 .message p {
   margin: 0;
@@ -351,9 +353,16 @@ button {
 /* O agente fala em texto corrido, marcado por um fio de "tinta de segurança". */
 .message.assistant {
   align-self: flex-start;
+  max-width: 100%;
   padding: var(--e-1) 0 var(--e-1) var(--e-4);
   color: var(--tinta);
   border-left: 2px solid var(--selo);
+}
+
+.valor {
+  color: var(--selo-escuro);
+  font-weight: 800;
+  white-space: nowrap;
 }
 
 .message.assistant.erro {
@@ -387,19 +396,20 @@ button {
 .loading-indicator i:nth-child(3) { animation-delay: 240ms; }
 
 .input-area {
-  padding: var(--e-3) clamp(var(--e-4), 4vw, var(--e-8)) var(--e-3);
+  padding: var(--e-3) max(var(--e-4), calc((100% - 720px) / 2));
   padding-bottom: max(var(--e-3), env(safe-area-inset-bottom));
+  background: var(--papel-claro);
   border-top: 1px solid var(--marca-dagua);
 }
 
 .compose-box {
   display: flex;
-  align-items: center;
+  align-items: flex-end;
   gap: var(--e-2);
   padding: var(--e-1) var(--e-1) var(--e-1) var(--e-4);
   background: var(--branco);
   border: 1px solid var(--marca-dagua);
-  border-radius: var(--raio-pilula);
+  border-radius: 24px;
   transition: border-color 160ms ease, box-shadow 160ms ease;
 }
 
@@ -408,18 +418,22 @@ button {
   box-shadow: var(--foco);
 }
 
-.compose-box input {
+.compose-box textarea {
   min-width: 0;
   flex: 1;
+  min-height: 40px;
+  max-height: 160px;
   padding: var(--e-2) 0;
   color: var(--tinta);
   background: transparent;
   border: 0;
   outline: 0;
+  resize: none;
   font-size: var(--t-md); /* 16px evita o zoom automático do iOS */
+  line-height: 1.5;
 }
 
-.compose-box input::placeholder {
+.compose-box textarea::placeholder {
   color: color-mix(in srgb, var(--grafite) 70%, var(--branco));
 }
 
@@ -462,6 +476,135 @@ button {
   text-align: center;
 }
 
+@media (min-width: 900px) {
+  .chat-page {
+    grid-template-columns: 300px minmax(0, 1fr);
+  }
+
+  .header {
+    display: none;
+  }
+
+  .painel {
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    gap: var(--e-3);
+    padding: var(--e-8) var(--e-6) var(--e-6);
+    color: var(--branco);
+    background: var(--tinta);
+  }
+
+  .roseta-painel {
+    position: absolute;
+    bottom: -120px;
+    left: -140px;
+    width: 420px;
+    color: var(--marca-dagua);
+    opacity: 0.16;
+    pointer-events: none;
+  }
+
+  .logo-painel {
+    position: relative;
+    width: 176px;
+  }
+
+  .painel .status-label {
+    position: relative;
+  }
+
+  .como-funciona {
+    position: relative;
+    margin-top: var(--e-12);
+  }
+
+  .como-funciona h2 {
+    margin: 0 0 var(--e-4);
+    font-size: var(--t-sm);
+    font-weight: 800;
+    color: color-mix(in srgb, var(--branco) 72%, var(--tinta));
+  }
+
+  /* Os passos são uma sequência real (catálogo, intenção, pagamento): numerados, ligados por um fio. */
+  .passos {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    counter-reset: passo;
+  }
+
+  .passos li {
+    position: relative;
+    display: grid;
+    gap: 2px;
+    padding: 0 0 var(--e-6) 40px;
+    counter-increment: passo;
+  }
+
+  .passos li::before {
+    content: counter(passo);
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 26px;
+    height: 26px;
+    display: grid;
+    place-items: center;
+    color: var(--tinta);
+    background: var(--marca-dagua);
+    border-radius: 50%;
+    font-size: var(--t-xs);
+    font-weight: 800;
+  }
+
+  .passos li:not(:last-child)::after {
+    content: "";
+    position: absolute;
+    top: 30px;
+    bottom: 4px;
+    left: 12.5px;
+    width: 1px;
+    background: color-mix(in srgb, var(--marca-dagua) 40%, transparent);
+  }
+
+  .passos strong {
+    font-size: var(--t-md);
+    font-weight: 600;
+    line-height: 26px;
+  }
+
+  .passos span {
+    color: color-mix(in srgb, var(--branco) 72%, var(--tinta));
+    font-size: var(--t-sm);
+    line-height: 1.45;
+  }
+
+  .painel-rodape {
+    position: relative;
+    display: grid;
+    gap: var(--e-4);
+    margin-top: auto;
+    padding-top: var(--e-4);
+    border-top: 1px solid color-mix(in srgb, var(--marca-dagua) 30%, transparent);
+  }
+
+  .aviso {
+    margin: 0;
+    color: color-mix(in srgb, var(--branco) 72%, var(--tinta));
+    font-size: var(--t-xs);
+    line-height: 1.5;
+  }
+
+  .sessao {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--e-3);
+  }
+}
+
 @keyframes desenhar {
   to { stroke-dashoffset: 0; }
 }
@@ -476,23 +619,8 @@ button {
   50% { opacity: 1; }
 }
 
-@media (min-width: 720px) {
-  .chat-page {
-    padding: var(--e-4);
-  }
-
-  .chat-container {
-    border: 1px solid var(--marca-dagua);
-    border-radius: 20px;
-  }
-}
-
-@media (max-width: 560px) {
-  .header {
-    padding-inline: var(--e-4);
-  }
-
-  .session-label {
-    display: none;
+@media (prefers-reduced-motion: reduce) {
+  .logo path {
+    animation-delay: 0s !important; /* sem movimento: a logo aparece pronta, não em pedaços */
   }
 }

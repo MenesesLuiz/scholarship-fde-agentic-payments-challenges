@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { Authenticator, useAuthenticator } from '@aws-amplify/ui-react';
 import { getHistory, sendMessage } from './api';
+import { LOGO_TRACOS, LOGO_VIEWBOX } from './logo';
 import './App.css';
 
 // Hipotrocoide: a curva das linhas de segurança (guilhochê) das cédulas.
@@ -27,6 +28,36 @@ function Roseta({ className }) {
   );
 }
 
+// Logo manuscrita: o mesmo traço de caneta da roseta, escrito uma vez ao aparecer.
+// Um <path> por traço, cada um começando quando o anterior termina: num path só,
+// o navegador reinicia o tracejado em cada traço e todas as letras surgiriam juntas.
+const ESCRITA_S = 2.4;
+function Logo({ className }) {
+  return (
+    <svg className={`logo ${className}`} viewBox={LOGO_VIEWBOX} aria-hidden="true" focusable="false">
+      {LOGO_TRACOS.map(([d, inicio, duracao], i) => (
+        <path
+          key={i}
+          d={d}
+          pathLength="1"
+          style={{ animationDelay: `${0.2 + inicio * ESCRITA_S}s`, animationDuration: `${duracao * ESCRITA_S}s` }}
+        />
+      ))}
+    </svg>
+  );
+}
+
+// Destaca valores em reais (R$ 249,90) dentro do texto do agente.
+const VALOR = /(R\$\s?\d[\d.]*(?:,\d{2})?)/;
+const destacarValores = (texto) =>
+  texto.split(VALOR).map((parte, i) => (i % 2 ? <strong key={i} className="valor">{parte}</strong> : parte));
+
+const PASSOS = [
+  ['Catálogo', 'Peça para ver os produtos e os preços.'],
+  ['Intenção', 'O agente registra o produto, o valor e a forma de pagamento.'],
+  ['Pagamento', 'Só acontece depois que você confirma Pix ou cartão.'],
+];
+
 const SUGESTOES = [
   'Ver o catálogo',
   'Quero comprar um fone com Pix',
@@ -41,6 +72,7 @@ function App() {
   const [loading, setLoading] = useState(false);
   const listaRef = useRef(null);
   const turnoRef = useRef(null);
+  const campoRef = useRef(null);
   // Rolagem pedida para o próximo render: 'fim' ao abrir o histórico, 'turno' ao enviar.
   // Durante o streaming fica null, para a tela não descer a cada pedaço da resposta.
   const rolagem = useRef(null);
@@ -75,6 +107,7 @@ function App() {
     if (!texto.trim() || loading) return;
 
     setInput('');
+    if (campoRef.current) campoRef.current.style.height = '';
     rolagem.current = 'turno';
     setMessages(prev => [...prev, { role: 'user', content: texto }]);
     setLoading(true);
@@ -108,6 +141,21 @@ function App() {
     enviar(input);
   };
 
+  // Enter envia; Shift+Enter quebra a linha (e não envia no meio de uma composição do teclado).
+  const handleKeyDown = (e) => {
+    if (e.key === 'Enter' && !e.shiftKey && !e.nativeEvent.isComposing) {
+      e.preventDefault();
+      enviar(input);
+    }
+  };
+
+  // O campo cresce com o texto até 160px; depois disso rola por dentro.
+  const handleInput = (e) => {
+    setInput(e.target.value);
+    e.target.style.height = 'auto';
+    e.target.style.height = `${Math.min(e.target.scrollHeight, 160)}px`;
+  };
+
   const handleLogout = () => {
     setMessages([]);
     signOut();
@@ -126,7 +174,7 @@ function App() {
   const mensagem = (m, i) => (
     <div key={i} className={`message ${m.role}${m.erro ? ' erro' : ''}`}>
       <span className="sr-only">{m.role === 'user' ? 'Você disse:' : 'Agente:'}</span>
-      <p>{formatMessage(m.content)}</p>
+      <p>{m.role === 'assistant' && !m.erro ? destacarValores(formatMessage(m.content)) : formatMessage(m.content)}</p>
     </div>
   );
 
@@ -135,7 +183,10 @@ function App() {
       <main className="login-page">
         <section className="login-hero">
           <Roseta className="roseta roseta-hero" />
-          <p className="marca" translate="no">ChatPay</p>
+          <p className="marca" translate="no">
+            <Logo className="logo-login" />
+            <span className="sr-only">ChatPay</span>
+          </p>
           <h1>Compras pelo chat, pagas com Pix ou cartão.</h1>
           <p className="login-copy">
             O agente mostra o catálogo, registra o que você quer e só paga depois da sua confirmação.
@@ -159,19 +210,40 @@ function App() {
 
   return (
     <main className="chat-page">
-      <div className="chat-container">
-        <header className="header">
-          <div className="brand-lockup">
-            <span className="selo-marca" aria-hidden="true"><Roseta className="roseta" /></span>
-            <div>
-              <h1 translate="no">ChatPay</h1>
-              <span className="status-label"><i aria-hidden="true" /> Agente online</span>
-            </div>
-          </div>
-          <div className="header-actions">
+      <h1 className="sr-only" translate="no">ChatPay</h1>
+
+      {/* Coluna lateral: só no desktop. */}
+      <aside className="painel" aria-label="Sobre o ChatPay">
+        <Roseta className="roseta roseta-painel" />
+        <Logo className="logo-painel" />
+        <p className="status-label"><i aria-hidden="true" /> Agente online</p>
+
+        <section className="como-funciona" aria-labelledby="titulo-passos">
+          <h2 id="titulo-passos">Como funciona</h2>
+          <ol className="passos">
+            {PASSOS.map(([titulo, texto]) => (
+              <li key={titulo}>
+                <strong>{titulo}</strong>
+                <span>{texto}</span>
+              </li>
+            ))}
+          </ol>
+        </section>
+
+        <div className="painel-rodape">
+          <p className="aviso">Limite de R$&nbsp;2.000 por padrão no primeiro uso. Compras simuladas: nenhum valor é cobrado.</p>
+          <div className="sessao">
             <span className="session-label">{user?.signInDetails?.loginId || 'Sessão protegida'}</span>
             <button type="button" className="logout-button" onClick={handleLogout}>Sair</button>
           </div>
+        </div>
+      </aside>
+
+      <section className="conversa" aria-label="Conversa com o agente">
+        {/* Cabeçalho fino: só no celular. */}
+        <header className="header">
+          <Logo className="logo-header" />
+          <button type="button" className="logout-button" onClick={handleLogout}>Sair</button>
         </header>
 
         <div className="messages" ref={listaRef} role="log" aria-live="polite" aria-busy={loading}>
@@ -207,9 +279,12 @@ function App() {
 
         <form className="input-area" onSubmit={handleSend}>
           <div className="compose-box">
-            <input
+            <textarea
+              ref={campoRef}
+              rows={1}
               value={input}
-              onChange={e => setInput(e.target.value)}
+              onChange={handleInput}
+              onKeyDown={handleKeyDown}
               placeholder="Escreva uma mensagem…"
               aria-label="Mensagem para o assistente"
               autoComplete="off"
@@ -222,9 +297,9 @@ function App() {
               </svg>
             </button>
           </div>
-          <p className="input-note">Compras simuladas: nenhum valor é cobrado.</p>
+          <p className="input-note">Enter envia, Shift+Enter quebra a linha. Compras simuladas.</p>
         </form>
-      </div>
+      </section>
     </main>
   );
 }
