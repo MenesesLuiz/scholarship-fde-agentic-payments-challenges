@@ -184,28 +184,24 @@ function App() {
   if (!logado) {
     return (
       <main className="login-page">
-        <section className="login-hero">
-          <Roseta className="roseta roseta-hero" />
+        {/* A flor fica atrás do card; as pétalas que sobram em volta reagem ao mouse. */}
+        <Roseta className="roseta roseta-hero" />
+
+        <section className="login-card" aria-labelledby="titulo-login">
           <p className="marca" translate="no">
             <Logo className="logo-login" />
             <span className="sr-only">ChatPay</span>
           </p>
-          <h1>Compras pelo chat, pagas com Pix ou cartão.</h1>
+          <h1 id="titulo-login">Compras pelo chat, pagas com Pix ou cartão.</h1>
           <p className="login-copy">
             O agente mostra o catálogo, registra o que você quer e só paga depois da sua confirmação.
           </p>
-        </section>
-
-        <section className="login-form" aria-labelledby="titulo-login">
-          <div className="login-form-inner">
-            <h2 id="titulo-login">Entrar</h2>
-            {/* Login do Cognito; sem opção de cadastro: usuários só entram por convite. */}
-            <Authenticator
-              hideSignUp
-              formFields={{ signIn: { username: { label: "E-mail", placeholder: "voce@empresa.com" } } }}
-            />
-            <p className="login-note">Acesso somente por convite do administrador.</p>
-          </div>
+          {/* Login do Cognito; sem opção de cadastro: usuários só entram por convite. */}
+          <Authenticator
+            hideSignUp
+            formFields={{ signIn: { username: { label: "E-mail", placeholder: "voce@empresa.com" } } }}
+          />
+          <p className="login-note">Acesso somente por convite do administrador.</p>
         </section>
       </main>
     );

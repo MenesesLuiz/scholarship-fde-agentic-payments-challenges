@@ -48,137 +48,163 @@ button {
   animation: preencher 0.45s ease-out forwards;
 }
 
-/* ---------- Login ---------- */
+/* ---------- Login: card de vidro no miolo da roseta ---------- */
 .login-page {
-  min-height: 100dvh;
-  display: grid;
-  grid-template-columns: 1fr;
-  background: var(--papel);
-}
-
-.login-hero {
   position: relative;
   overflow: hidden;
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-end;
-  gap: var(--e-4);
-  padding: var(--e-12) var(--e-6) var(--e-8);
-  padding-top: max(var(--e-12), env(safe-area-inset-top));
+  min-height: 100dvh;
+  display: grid;
+  place-items: center;
+  padding: max(var(--e-6), env(safe-area-inset-top)) var(--e-4) max(var(--e-6), env(safe-area-inset-bottom));
   color: var(--branco);
-  background: var(--tinta);
+  background: radial-gradient(circle at 50% 45%, #27347a 0, var(--tinta) 55%, var(--tinta-funda) 100%);
+
+  /* Formulário do Amplify no tema escuro, só dentro do login */
+  --amplify-components-heading-color: var(--branco);
+  --amplify-components-text-color: var(--branco);
+  --amplify-components-field-label-color: var(--branco);
+  --amplify-components-fieldcontrol-color: var(--branco);
+  --amplify-components-fieldcontrol-border-color: rgb(255 255 255 / 0.28);
+  --amplify-components-fieldcontrol-focus-border-color: var(--selo-claro);
+  --amplify-components-button-color: var(--branco);
+  --amplify-components-button-border-color: rgb(255 255 255 / 0.28);
+  --amplify-components-button-hover-color: var(--branco);
+  --amplify-components-button-hover-background-color: rgb(255 255 255 / 0.12);
+  --amplify-components-button-hover-border-color: rgb(255 255 255 / 0.5);
+  --amplify-components-button-active-background-color: rgb(255 255 255 / 0.18);
+  --amplify-components-button-focus-color: var(--branco);
+  --amplify-components-button-focus-background-color: rgb(255 255 255 / 0.12);
+  --amplify-components-button-primary-background-color: var(--selo);
+  --amplify-components-button-primary-hover-background-color: var(--selo-escuro);
+  --amplify-components-button-primary-focus-background-color: var(--selo-escuro);
+  --amplify-components-button-link-color: var(--selo-claro);
+  --amplify-components-button-link-hover-color: var(--branco);
+  --amplify-components-button-link-focus-color: var(--branco);
 }
 
+/* Roseta centralizada, maior que o card: ele fica no miolo da flor. */
 .roseta-hero {
   position: absolute;
-  top: -34%;
-  right: -38%;
-  width: min(110vw, 520px);
+  top: 50%;
+  left: 50%;
+  width: max(760px, 125vmin);
+  translate: -50% -50%;
   color: var(--marca-dagua);
-  opacity: 0.4;
-  pointer-events: none;
+  opacity: 0.45;
+  transition: opacity 1.2s ease;
 }
 
 .roseta-hero path {
+  transform-box: fill-box;
+  transform-origin: center;
   stroke-dasharray: 1;
   stroke-dashoffset: 1;
   animation: desenhar 2.4s cubic-bezier(0.6, 0, 0.2, 1) forwards;
+  transition: transform 1.8s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .roseta-hero path:nth-child(2) { animation-delay: 0.25s; }
 .roseta-hero path:nth-child(3) { animation-delay: 0.5s; }
 
-.marca {
+/* Hover: as camadas giram em sentidos opostos e a flor se abre e acende. */
+@media (hover: hover) {
+  .roseta-hero:hover {
+    opacity: 0.8;
+  }
+
+  .roseta-hero:hover path:nth-child(1) { transform: rotate(32deg) scale(1.05); }
+  .roseta-hero:hover path:nth-child(2) { transform: rotate(-24deg) scale(1.09); }
+  .roseta-hero:hover path:nth-child(3) { transform: rotate(48deg) scale(1.14); }
+}
+
+/* Liquid glass: vidro translúcido com desfoque, borda clara e reflexo no alto. */
+.login-card {
   position: relative;
-  margin: 0 0 auto;
+  z-index: 1;
+  width: min(100%, 420px);
+  padding: var(--e-8) var(--e-8) var(--e-6);
+  background: linear-gradient(155deg, rgb(255 255 255 / 0.17), rgb(255 255 255 / 0.05) 60%);
+  border: 1px solid rgb(255 255 255 / 0.24);
+  border-radius: 28px;
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.4),
+    inset 0 -1px 0 rgb(255 255 255 / 0.08),
+    0 30px 80px rgb(6 10 36 / 0.5);
+  -webkit-backdrop-filter: blur(18px) saturate(160%);
+  backdrop-filter: blur(18px) saturate(160%);
+}
+
+.login-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: radial-gradient(120% 60% at 15% 0%, rgb(255 255 255 / 0.18), transparent 55%);
+  pointer-events: none;
+}
+
+.login-card > * {
+  position: relative;
+}
+
+.marca {
+  margin: 0 0 var(--e-6);
 }
 
 .logo-login {
-  width: 168px;
+  width: 148px;
 }
 
-.login-hero h1 {
-  position: relative;
-  max-width: 13ch;
-  margin: var(--e-12) 0 0;
-  font-size: clamp(var(--t-xl), 7vw, var(--t-2xl));
+.login-card h1 {
+  margin: 0;
+  font-size: clamp(1.625rem, 5vw, 2rem);
   font-weight: 800;
-  line-height: 1.02;
-  letter-spacing: -0.035em;
+  line-height: 1.08;
+  letter-spacing: -0.03em;
   text-wrap: balance;
 }
 
 .login-copy {
-  position: relative;
   max-width: 36ch;
-  margin: 0;
-  color: color-mix(in srgb, var(--branco) 78%, var(--tinta));
-  font-size: var(--t-md);
+  margin: var(--e-3) 0 var(--e-6);
+  color: rgb(255 255 255 / 0.78);
+  font-size: var(--t-sm);
   line-height: 1.55;
 }
 
-.login-form {
-  display: grid;
-  place-items: center;
-  padding: var(--e-8) var(--e-6) var(--e-12);
-  padding-bottom: max(var(--e-12), env(safe-area-inset-bottom));
-}
-
-.login-form-inner {
-  width: min(100%, 380px);
-}
-
-.login-form h2 {
-  margin: 0 0 var(--e-6);
-  font-size: var(--t-lg);
-  font-weight: 800;
-  letter-spacing: -0.02em;
-}
-
-.login-form [data-amplify-authenticator] {
+.login-card [data-amplify-authenticator] {
   display: block;
 }
 
-.login-form [data-amplify-router] {
+.login-card [data-amplify-router] {
   background: transparent;
 }
 
-/* No celular o Amplify estreita o container; aqui ele ocupa a coluna inteira. */
-.login-form [data-amplify-container] {
+/* No celular o Amplify estreita o container; aqui ele ocupa o card inteiro. */
+.login-card [data-amplify-container] {
   width: 100%;
 }
 
-.login-form .amplify-input {
-  background: var(--branco);
+.login-card .amplify-input {
+  background: rgb(255 255 255 / 0.08);
+}
+
+.login-card .amplify-input::placeholder {
+  color: rgb(255 255 255 / 0.5);
 }
 
 .login-note {
   margin: var(--e-6) 0 0;
   padding-top: var(--e-4);
-  color: var(--grafite);
-  font-size: var(--t-sm);
-  border-top: 1px solid var(--marca-dagua);
+  color: rgb(255 255 255 / 0.7);
+  font-size: var(--t-xs);
+  border-top: 1px solid rgb(255 255 255 / 0.18);
 }
 
-@media (min-width: 900px) {
-  .login-page {
-    grid-template-columns: minmax(0, 1.15fr) minmax(420px, 1fr);
-  }
-
-  .login-hero {
-    padding: var(--e-12) clamp(var(--e-12), 6vw, 96px);
-  }
-
-  .logo-login {
-    width: 200px;
-  }
-
-  /* Roseta no alto, para não cruzar o texto do rodapé do painel. */
-  .roseta-hero {
-    top: 0;
-    right: -12%;
-    width: min(78vh, 680px);
-    transform: translateY(-22%);
+@media (max-width: 480px) {
+  .login-card {
+    padding: var(--e-6) var(--e-6) var(--e-4);
+    border-radius: 24px;
   }
 }
 
@@ -635,6 +661,10 @@ button {
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .roseta-hero:hover path {
+    transform: none !important;
+  }
+
   .logo path {
     animation-delay: 0s !important; /* sem movimento: a logo aparece pronta, sem atraso */
   }
