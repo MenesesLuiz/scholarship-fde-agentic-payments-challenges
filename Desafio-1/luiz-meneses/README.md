@@ -149,16 +149,16 @@ expirada, método inválido e tentativa de passar `usuario_id` pelos argumentos.
 
 ## Evidências
 
-Capturadas em 2026-11-18 contra a stack implantada (front local apontando para a API na AWS).
+Prints 1 a 6 capturados em 2026-11-21, com o front atual; o item 7 é de 2026-11-18. Todos contra a stack implantada (front local apontando para a API na AWS).
 
 | # | Cenário | Arquivo |
 |---|---|---|
 | 1 | Login com Cognito, sem opção de cadastro | [01-login-sem-cadastro.png](evidencias/01-login-sem-cadastro.png) |
 | 2 | Usuário logado consultando o catálogo (tool `listar_catalogo`) | [02-catalogo-logado.png](evidencias/02-catalogo-logado.png) |
-| 3 | Compra aprovada com **Pix** | [03-compra-pix.png](evidencias/03-compra-pix.png) |
-| 4 | Compra aprovada com **cartão** | [04-compra-cartao.png](evidencias/04-compra-cartao.png) |
-| 5 | Notebook (R$ 4.599,90) acima do limite de R$ 2.000 → `LIMITE_EXCEDIDO` | [05-limite-excedido.png](evidencias/05-limite-excedido.png) |
-| 6 | `intencao_id` inexistente → `INTENCAO_INVALIDA` (recusado pela Lambda, não pelo modelo) | [06-intencao-invalida.png](evidencias/06-intencao-invalida.png) |
+| 3 | Compra aprovada com **Pix** ("1 mouse no pix") | [03-compra-pix.png](evidencias/03-compra-pix.png) |
+| 4 | Compra aprovada com **cartão** ("1 teclado mecânico no cartão") | [04-compra-cartao.png](evidencias/04-compra-cartao.png) |
+| 5 | Notebook (R$ 4.599,90) acima do limite disponível → `LIMITE_EXCEDIDO` | [05-limite-excedido.png](evidencias/05-limite-excedido.png) |
+| 6 | `intencao_id` inexistente (`int_000000000000`) → `INTENCAO_INVALIDA` (recusado pela Lambda, não pelo modelo) | [06-intencao-invalida.png](evidencias/06-intencao-invalida.png) |
 | 7 | `POST /chat` sem token e com token falso → `401` do API Gateway | [07-api-401-sem-token.txt](evidencias/07-api-401-sem-token.txt) |
 
 Também conferido: `aws cognito-idp sign-up` direto na API do Cognito é recusado com
