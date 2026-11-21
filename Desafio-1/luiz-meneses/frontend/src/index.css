@@ -1,11 +1,81 @@
+/* Design system do ChatPay: tema "papel-moeda" (papel de cédula + tinta de segurança). */
 :root {
-  font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  color: #162338;
-  background: #edf4f7;
+  /* Cores */
+  --papel: #eef2ec;
+  --papel-claro: #f7f9f5;
+  --tinta: #1b2559;
+  --tinta-funda: #121a42;
+  --selo: #0e7c66;
+  --selo-escuro: #0a5f4e;
+  --marca-dagua: #c9d2e6;
+  --grafite: #4a5468;
+  --recusa: #b42318;
+  --branco: #ffffff;
+
+  /* Tipografia: uma família, escala clássica 12 / 14 / 16 / 21 / 36 / 48 */
+  --fonte: "Schibsted Grotesk", ui-sans-serif, system-ui, "Segoe UI", sans-serif;
+  --t-xs: 0.75rem;
+  --t-sm: 0.875rem;
+  --t-md: 1rem;
+  --t-lg: 1.3125rem;
+  --t-xl: 2.25rem;
+  --t-2xl: 3rem;
+
+  /* Espaços (base 4) e raios */
+  --e-1: 4px;
+  --e-2: 8px;
+  --e-3: 12px;
+  --e-4: 16px;
+  --e-6: 24px;
+  --e-8: 32px;
+  --e-12: 48px;
+  --raio-campo: 10px;
+  --raio-bolha: 18px;
+  --raio-pilula: 999px;
+
+  --foco: 0 0 0 3px color-mix(in srgb, var(--selo) 35%, transparent);
+
+  font-family: var(--fonte);
+  font-size: 100%;
+  line-height: 1.5;
+  color: var(--tinta);
+  background: var(--papel);
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+
+  /* Tema do formulário de login do Amplify, a partir dos mesmos tokens */
+  --amplify-fonts-default-variable: var(--fonte);
+  --amplify-fonts-default-static: var(--fonte);
+  --amplify-components-field-label-color: var(--tinta);
+  --amplify-components-fieldcontrol-color: var(--tinta);
+  --amplify-components-fieldcontrol-border-color: var(--marca-dagua);
+  --amplify-components-fieldcontrol-border-radius: var(--raio-campo);
+  --amplify-components-fieldcontrol-focus-border-color: var(--selo);
+  --amplify-components-fieldcontrol-focus-box-shadow: var(--foco);
+  --amplify-components-button-border-radius: var(--raio-campo);
+  --amplify-components-button-border-color: var(--marca-dagua);
+  --amplify-components-button-color: var(--tinta);
+  --amplify-components-button-hover-background-color: var(--papel);
+  --amplify-components-button-hover-border-color: var(--tinta);
+  --amplify-components-button-hover-color: var(--tinta);
+  --amplify-components-button-focus-box-shadow: var(--foco);
+  --amplify-components-button-primary-background-color: var(--tinta);
+  --amplify-components-button-primary-hover-background-color: var(--selo);
+  --amplify-components-button-primary-focus-background-color: var(--selo);
+  --amplify-components-button-primary-active-background-color: var(--selo-escuro);
+  --amplify-components-button-link-color: var(--selo);
+  --amplify-components-button-link-hover-color: var(--selo-escuro);
+  --amplify-components-button-link-hover-background-color: transparent;
+  --amplify-components-button-link-focus-background-color: transparent;
+  --amplify-components-button-link-active-background-color: transparent;
+  --amplify-components-authenticator-router-border-width: 0;
+  --amplify-components-authenticator-router-box-shadow: none;
+  --amplify-components-authenticator-router-background-color: transparent;
+  --amplify-components-authenticator-form-padding: 0;
+  --amplify-components-authenticator-container-width-max: 100%;
+  --amplify-components-alert-error-color: var(--recusa);
 }
 
 * {
@@ -22,5 +92,30 @@ body,
 }
 
 body {
-  min-height: 100svh;
+  min-height: 100dvh;
+}
+
+:focus-visible {
+  outline: 2px solid var(--selo);
+  outline-offset: 2px;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }
