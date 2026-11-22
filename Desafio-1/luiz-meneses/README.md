@@ -149,7 +149,7 @@ expirada, método inválido e tentativa de passar `usuario_id` pelos argumentos.
 
 ## Evidências
 
-Prints 1 a 6 capturados em 2026-11-21, com o front atual; o item 7 é de 2026-11-18. Todos contra a stack implantada (front local apontando para a API na AWS).
+Capturadas em 2026-11-21 contra a stack implantada (front local apontando para a API na AWS); o `.txt` do item 7 é a mesma chamada feita em 2026-11-18.
 
 | # | Cenário | Arquivo |
 |---|---|---|
@@ -159,7 +159,7 @@ Prints 1 a 6 capturados em 2026-11-21, com o front atual; o item 7 é de 2026-11
 | 4 | Compra aprovada com **cartão** ("1 teclado mecânico no cartão") | [04-compra-cartao.png](evidencias/04-compra-cartao.png) |
 | 5 | Notebook (R$ 4.599,90) acima do limite disponível → `LIMITE_EXCEDIDO` | [05-limite-excedido.png](evidencias/05-limite-excedido.png) |
 | 6 | `intencao_id` inexistente (`int_000000000000`) → `INTENCAO_INVALIDA` (recusado pela Lambda, não pelo modelo) | [06-intencao-invalida.png](evidencias/06-intencao-invalida.png) |
-| 7 | `POST /chat` sem token e com token falso → `401` do API Gateway | [07-api-401-sem-token.txt](evidencias/07-api-401-sem-token.txt) |
+| 7 | `POST /chat` sem token e com token falso → `401` do API Gateway (curl) | [07-api-401-sem-token.png](evidencias/07-api-401-sem-token.png), [07b-api-401-token-falso.png](evidencias/07b-api-401-token-falso.png) (saída completa em [07-api-401-sem-token.txt](evidencias/07-api-401-sem-token.txt)) |
 
 Também conferido: `aws cognito-idp sign-up` direto na API do Cognito é recusado com
 `NotAuthorizedException: SignUp is not permitted for this user pool`.
