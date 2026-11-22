@@ -15,6 +15,7 @@ import unicodedata
 import boto3
 from bedrock_agentcore.runtime import BedrockAgentCoreApp
 from strands import Agent, tool
+from strands.agent.conversation_manager import NullConversationManager
 from strands.models import BedrockModel
 
 MODEL_ID = os.environ.get("MODEL_ID", "us.anthropic.claude-haiku-4-5-20251001-v1:0")
@@ -138,6 +139,9 @@ async def invoke(payload, context=None):
         system_prompt=SYSTEM_PROMPT,
         tools=montar_tools(usuario_id, mensagem, estado),
         messages=historico,  # histórico completo da conversa a cada turno
+        # O padrão do Strands corta para as últimas 40 mensagens no fim do turno; aí o fatiamento
+        # agente.messages[inicio:] saía vazio e o turno não era salvo. Sem corte: histórico completo.
+        conversation_manager=NullConversationManager(),
         callback_handler=None,
     )
     inicio = len(agente.messages)
